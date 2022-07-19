@@ -4,6 +4,7 @@ PlaydateAPI *pd = NULL;
 
 char *ballPatch = "images/ball";
 char *rocketPatch ="images/rocket";
+char *blockPatch ="images/block";
 
 typedef struct CObject
 {	
@@ -15,10 +16,11 @@ typedef struct CObject
  
  TObject rocket;
  TObject ball;
+ TObject blocks[20];
  bool objectCollision(TObject obj1, TObject obj2);
  void moveObject(TObject *obj);
  void worldCollision(TObject *obj);
- //bool objectCollision(TObject *obj1, TObject *obj2);
+ void destroyObject(TObject *obj);
 void setPDPtr(PlaydateAPI *ppd)
 {
 pd= ppd;
@@ -49,20 +51,38 @@ void initObject(TObject *obj, char *patch, int xPos, int yPos)
 	(*obj).size[1]=scaleY;
 	(*obj).postion[0]=xPos;
 	(*obj).postion[1]=yPos;
-	(*obj).speed[0]=2;
-	(*obj).speed[1]=2;
+	(*obj).speed[0]=5;
+	(*obj).speed[1]=5;
 	
 	pd->sprite->addSprite(obj->sprite);	
 
 	moveObject(obj);
 }
 
-
+void createBlocks()
+{
+	int posX = 25;
+	int posY = 10;
+	int maxP = 0;
+	for (int i = 0; i < ((sizeof(blocks)/sizeof(blocks[0]))); i++)
+	{
+		initObject(&blocks[i], blockPatch, posX, posY);
+		posX += 50;
+		if (posX > 400-maxP)
+		{
+			maxP += 50;
+			posX = 25 + maxP;
+			posY += 15;
+			
+		}
+	}
+}
 
 void setupGame(void)
 {
  initObject(&ball, ballPatch,50,50);
- initObject(&rocket, rocketPatch,200,230);
+ initObject(&rocket, rocketPatch,200,230); 
+ createBlocks();
 }
 
 
@@ -80,8 +100,20 @@ if (objectCollision(*ball, *rocket))
 {
 	(*ball).speed[1] = -1;
 }
+for (int i = 0; i < (sizeof(blocks) / sizeof(blocks[0]));i++)
+{
+	if (objectCollision(*ball, blocks[i]))
+	{
+
+	}
+}
 moveObject(ball);
 }
+void destroyObject(TObject *obj)
+{
+
+}
+
 void moveRocket(TObject *obj)
 {
 	PDButtons  press;
@@ -89,11 +121,11 @@ void moveRocket(TObject *obj)
 	(*obj).speed[0] = 0;
 	if (press & kButtonLeft)
 	{
-	(*obj).speed[0] = -5;
+	(*obj).speed[0] = -10;
 	}
 	if (press & kButtonRight)
 	{
-		(*obj).speed[0] = 5;
+		(*obj).speed[0] = 10;
 	}
 
 	if (obj->postion[0] < 0 + (obj->size[0] / 2))// || (obj->postion[0] > 400 - (obj->scale[0] / 2)))
