@@ -1,0 +1,53 @@
+Checking whether the ASM compiler is GNU using "--version" did not match "(GNU assembler)|(GCC)|(Free Software Foundation)":
+Оптимизирующий компилятор Microsoft (R) C/C++ версии 19.16.27048 для x64
+(C) Корпорация Майкрософт (Microsoft Corporation).  Все права защищены.
+
+cl: командная строка warning D9002: пропуск неизвестного параметра "--version"
+cl: командная строка error D8003: отсутствие исходного имени файла
+Checking whether the ASM compiler is Clang using "--version" did not match "(clang version)":
+Оптимизирующий компилятор Microsoft (R) C/C++ версии 19.16.27048 для x64
+(C) Корпорация Майкрософт (Microsoft Corporation).  Все права защищены.
+
+cl: командная строка warning D9002: пропуск неизвестного параметра "--version"
+cl: командная строка error D8003: отсутствие исходного имени файла
+Checking whether the ASM compiler is AppleClang using "--version" did not match "(Apple LLVM version)":
+Оптимизирующий компилятор Microsoft (R) C/C++ версии 19.16.27048 для x64
+(C) Корпорация Майкрософт (Microsoft Corporation).  Все права защищены.
+
+cl: командная строка warning D9002: пропуск неизвестного параметра "--version"
+cl: командная строка error D8003: отсутствие исходного имени файла
+Checking whether the ASM compiler is ARMClang using "--version" did not match "armclang":
+Оптимизирующий компилятор Microsoft (R) C/C++ версии 19.16.27048 для x64
+(C) Корпорация Майкрософт (Microsoft Corporation).  Все права защищены.
+
+cl: командная строка warning D9002: пропуск неизвестного параметра "--version"
+cl: командная строка error D8003: отсутствие исходного имени файла
+Checking whether the ASM compiler is HP using "-V" did not match "HP C":
+Оптимизирующий компилятор Microsoft (R) C/C++ версии 19.16.27048 для x64
+(C) Корпорация Майкрософт (Microsoft Corporation).  Все права защищены.
+
+cl: командная строка error D8004: для "/V" требуется аргумент
+Checking whether the ASM compiler is Intel using "--version" did not match "(ICC)":
+Оптимизирующий компилятор Microsoft (R) C/C++ версии 19.16.27048 для x64
+(C) Корпорация Майкрософт (Microsoft Corporation).  Все права защищены.
+
+cl: командная строка warning D9002: пропуск неизвестного параметра "--version"
+cl: командная строка error D8003: отсутствие исходного имени файла
+Checking whether the ASM compiler is IntelLLVM using "--version" did not match "(Intel[^
+]+oneAPI)":
+Оптимизирующий компилятор Microsoft (R) C/C++ версии 19.16.27048 для x64
+(C) Корпорация Майкрософт (Microsoft Corporation).  Все права защищены.
+
+cl: командная строка warning D9002: пропуск неизвестного параметра "--version"
+cl: командная строка error D8003: отсутствие исходного имени файла
+Checking whether the ASM compiler is SunPro using "-V" did not match "Sun C":
+Оптимизирующий компилятор Microsoft (R) C/C++ версии 19.16.27048 для x64
+(C) Корпорация Майкрософт (Microsoft Corporation).  Все права защищены.
+
+cl: командная строка error D8004: для "/V" требуется аргумент
+Checking whether the ASM compiler is XL using "-qversion" did not match "XL C":
+Оптимизирующий компилятор Microsoft (R) C/C++ версии 19.16.27048 для x64
+(C) Корпорация Майкрософт (Microsoft Corporation).  Все права защищены.
+
+cl: командная строка warning D9002: пропуск неизвестного параметра "-qversion"
+cl: командная строка error D8003: отсутствие исходного имени файла
