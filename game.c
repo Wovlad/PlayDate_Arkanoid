@@ -4,7 +4,7 @@ PlaydateAPI *pd = NULL;
 
 char *ballPatch = "images/ball";
 char *rocketPatch ="images/rocket";
-char *blockPatch ="images/blanc";
+char *blockPatch ="images/block50";
 
 typedef struct CObject
 {	
@@ -12,10 +12,11 @@ typedef struct CObject
 	int postion[2];
 	int size[2];
 	int speed[2];
+	bool isStatic;
 } TObject;
  
  TObject rocket;
- TObject ball;
+ TObject ballSprite;
  TObject blocks[99];
  int blockCount = 0;
  
@@ -26,6 +27,7 @@ typedef struct CObject
  void moveObject(TObject *obj);
  void worldCollision(TObject *obj);
  void destroyBlock(TObject *obj, int index);
+ void initBall();
 void setPDPtr(PlaydateAPI *ppd)
 {
 pd= ppd;
@@ -60,11 +62,12 @@ void initObject(TObject *obj, char *patch, int xPos, int yPos)
 	(*obj).size[1]=scaleY;
 	(*obj).postion[0]=xPos;
 	(*obj).postion[1]=yPos;
-	(*obj).speed[0]=3;
-	(*obj).speed[1]=3;
+	(*obj).speed[0]=0;
+	(*obj).speed[1]=0;
 	
 	pd->sprite->addSprite(obj->sprite);	
 
+	(*obj).isStatic=true;
 	moveObject(obj);
 }
 
@@ -94,12 +97,35 @@ void createBlocks()
 	}
 }
 
+void initBall()
+{
+	ballSprite.postion[0] = 175;
+	ballSprite.postion[1] = rocket.postion[1] - rocket.size[1] / 2 - ballSprite.size[1] / 2;
+	ballSprite.postion[0]=rocket.postion[0];
+	ballSprite.speed[0]=0;
+	ballSprite.speed[1]=0;
+	ballSprite.isStatic = true;
+}
+
+void startBall()
+{
+	ballSprite.speed[0]=3;
+	ballSprite.speed[1]=3;
+
+	ballSprite.isStatic=false;
+}
+
+void resetBallStatus()
+{
+	initBall();
+}
+
 void setupGame(void)
 {
- initObject(&ball, ballPatch,200,100);
+ initObject(&ballSprite, ballPatch,200,100);
  initObject(&rocket, rocketPatch,200,230); 
- createBlocks();
- 
+ createBlocks(); 
+ initBall();
 }
 
 
@@ -139,6 +165,10 @@ for (int i = 0; i < blockCount;i++)
 		break;
 	}
 }
+if (ball->isStatic)
+{
+	(*ball).postion[0]=rocket->postion[0];
+}
 moveObject(ball);
 }
 
@@ -152,7 +182,7 @@ void destroyBlock(TObject *obj, int index)
 	if(blockCount<0){blockCount=0;}
 }
 
-void moveRocket(TObject *obj)
+void controll(TObject *obj)
 {
 	PDButtons  press;
 	pd->system->getButtonState(&press,NULL,NULL);
@@ -164,6 +194,10 @@ void moveRocket(TObject *obj)
 	if (press & kButtonRight)
 	{
 		(*obj).speed[0] = 10;
+	}
+	if (press & kButtonA)
+	{
+		startBall();
 	}
 
 	if (obj->postion[0] < 0 + (obj->size[0] / 2))// || (obj->postion[0] > 400 - (obj->scale[0] / 2)))
@@ -178,10 +212,6 @@ void moveRocket(TObject *obj)
 	}
 	(*obj).postion[0] += obj->speed[0];
 	moveObject(obj);
-}
-void checkNormal(TObject *obj1, TObject *obj2)
-{
-
 }
 
 void horizontalBounds(TObject *obj)
@@ -204,6 +234,10 @@ void worldCollision(TObject *obj)
 	{
 		verticalBounds(obj);
 	}
+	if ((obj->postion[1] >= 240 - (obj->size[1] / 2)))
+	{
+		resetBallStatus();
+	}
 }
 
 
@@ -219,11 +253,10 @@ bool objectHorizontalCollisiion(TObject obj1, TObject obj2)
 	return (obj2.postion[0] + (obj2.size[0] / 2)) > (obj1.postion[0] - (obj1.size[0] / 2)) && (obj1.postion[0] + (obj1.size[0] / 2)) > (obj2.postion[0] - (obj2.size[0] / 2));
 }
 
-
 int update(void *ud)
 {	
-	flyBall(&ball, &rocket);
-	moveRocket(&rocket);
+	flyBall(&ballSprite, &rocket);
+	controll(&rocket);
 	pd->sprite->updateAndDrawSprites();
 	drawWindow();
 }
