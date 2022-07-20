@@ -4,7 +4,7 @@ PlaydateAPI *pd = NULL;
 
 char *ballPatch = "images/ball";
 char *rocketPatch ="images/rocket";
-char *blockPatch ="images/block";
+char *blockPatch ="images/blanc";
 
 typedef struct CObject
 {	
@@ -16,8 +16,8 @@ typedef struct CObject
  
  TObject rocket;
  TObject ball;
- TObject blocks[50];
- int blockCount = 20;
+ TObject blocks[99];
+ int blockCount = 0;
  
  bool objectHorizontalCollisiion(TObject obj1, TObject obj2);
  bool objectVerticalCollision(TObject obj1, TObject obj2);
@@ -32,7 +32,7 @@ pd= ppd;
 }
 void drawWindow()
 {
-	pd->graphics->drawLine(350, 0, 350, 400, 1, kColorBlack);
+	pd->graphics->drawLine(350, 0, 350, 400, 5, kColorBlack);
 }
 
 LCDBitmap *loadImageAtPath(const char *path)
@@ -60,8 +60,8 @@ void initObject(TObject *obj, char *patch, int xPos, int yPos)
 	(*obj).size[1]=scaleY;
 	(*obj).postion[0]=xPos;
 	(*obj).postion[1]=yPos;
-	(*obj).speed[0]=1;
-	(*obj).speed[1]=1;
+	(*obj).speed[0]=3;
+	(*obj).speed[1]=3;
 	
 	pd->sprite->addSprite(obj->sprite);	
 
@@ -70,20 +70,27 @@ void initObject(TObject *obj, char *patch, int xPos, int yPos)
 
 void createBlocks()
 {
-	int posX = 25;
-	int posY = 10;
-	int maxP = 0;
-	for (int i = 0; i < blockCount; i++)
+	int bW = 0;
+	int bH = 0;
+	LCDBitmap *blockTemplate;
+	blockTemplate = loadImageAtPath(blockPatch);
+	pd->graphics->getBitmapData(blockTemplate,&bW,&bH,NULL,NULL,NULL);
+	int posX = bW/2;
+	int posY = bH/2;
+	int maxBlockInRow = 0;
+	
+	for (int i = 0; i < (sizeof(blocks)/sizeof(blocks[0])); i++)
 	{
+		if (maxBlockInRow > 175){break;}
 		initObject(&blocks[i], blockPatch, posX, posY);
-		posX += 50;
-		if (posX > 400-maxP)
+		posX += bW;
+		if (posX > 350- maxBlockInRow)
 		{
-			maxP += 50;
-			posX = 25 + maxP;
-			posY += 15;
-			
+			maxBlockInRow += bW;
+			posX = bW/2 + maxBlockInRow;
+			posY += bH;			
 		}
+		blockCount ++;
 	}
 }
 
@@ -161,11 +168,13 @@ void moveRocket(TObject *obj)
 
 	if (obj->postion[0] < 0 + (obj->size[0] / 2))// || (obj->postion[0] > 400 - (obj->scale[0] / 2)))
 	{
-		(*obj).postion[0] = 0 + (obj->size[0] / 2);
+		(*obj).postion[0] = 0 + (obj->size[0] / 2);//(obj->size[0] / 2);
+		//(*obj).speed[0] = 0;
 	}
-	if (obj->postion[0] > 400 - (obj->size[0] / 2))
+	if (obj->postion[0] > 350 - (obj->size[0] / 2))
 	{
-		(*obj).postion[0] = 400 - (obj->size[0] / 2);
+		(*obj).postion[0] = 350 - (obj->size[0] / 2);//  (obj->size[0] / 2);
+		//(*obj).speed[0] = 0;
 	}
 	(*obj).postion[0] += obj->speed[0];
 	moveObject(obj);
@@ -187,7 +196,7 @@ void verticalBounds(TObject *obj)
 
 void worldCollision(TObject *obj)
 {
-	if ((obj->postion[0] <= 0+(obj->size[0]/2)) || (obj->postion[0] >= 400- (obj->size[0] / 2)))
+	if ((obj->postion[0] <= 0+(obj->size[0]/2)) || (obj->postion[0] >= 350- (obj->size[0] / 2)))
 	{
 		horizontalBounds(obj);
 	}
@@ -216,5 +225,5 @@ int update(void *ud)
 	flyBall(&ball, &rocket);
 	moveRocket(&rocket);
 	pd->sprite->updateAndDrawSprites();
-	
+	drawWindow();
 }
