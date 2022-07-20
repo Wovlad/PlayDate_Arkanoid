@@ -16,11 +16,16 @@ typedef struct CObject
  
  TObject rocket;
  TObject ball;
- TObject blocks[20];
- bool objectCollision(TObject obj1, TObject obj2);
+ TObject blocks[50];
+ int blockCount = 20;
+ 
+ bool objectHorizontalCollisiion(TObject obj1, TObject obj2);
+ bool objectVerticalCollision(TObject obj1, TObject obj2);
+ void horizontalBounds(TObject *obj);
+ void verticalBounds(TObject *obj);
  void moveObject(TObject *obj);
  void worldCollision(TObject *obj);
- void destroyObject(TObject *obj);
+ void destroyBlock(TObject *obj, int index);
 void setPDPtr(PlaydateAPI *ppd)
 {
 pd= ppd;
@@ -64,7 +69,7 @@ void createBlocks()
 	int posX = 25;
 	int posY = 10;
 	int maxP = 0;
-	for (int i = 0; i < ((sizeof(blocks)/sizeof(blocks[0]))); i++)
+	for (int i = 0; i < blockCount; i++)
 	{
 		initObject(&blocks[i], blockPatch, posX, posY);
 		posX += 50;
@@ -80,7 +85,7 @@ void createBlocks()
 
 void setupGame(void)
 {
- initObject(&ball, ballPatch,50,50);
+ initObject(&ball, ballPatch,200,220);
  initObject(&rocket, rocketPatch,200,230); 
  createBlocks();
 }
@@ -96,22 +101,41 @@ void flyBall(TObject *ball, TObject *rocket)
 worldCollision(ball);
 (*ball).postion[0] += ball->speed[0];
 (*ball).postion[1] += ball->speed[1];
-if (objectCollision(*ball, *rocket))
+if (objectVerticalCollision(*ball, *rocket)&& (objectHorizontalCollisiion(*ball, *rocket)))
 {
 	(*ball).speed[1] = -1;
 }
-for (int i = 0; i < (sizeof(blocks) / sizeof(blocks[0]));i++)
+
+for (int i = 0; i < blockCount;i++)
 {
-	if (objectCollision(*ball, blocks[i]))
+	if (objectVerticalCollision(*ball, blocks[i])&& objectHorizontalCollisiion(*ball, blocks[i]))
 	{
 
+		if (ball->postion[1]+ball->size[1]>(blocks[i].postion[1]+blocks[i].size[1]))
+		{
+			verticalBounds(ball);
+		}
+		else
+		{
+			horizontalBounds(ball);
+		}
+		//verticalBounds(ball);
+		//horizontalBounds(ball);
+		destroyBlock(&blocks[i], i);
+		break;
 	}
 }
 moveObject(ball);
 }
-void destroyObject(TObject *obj)
-{
 
+void destroyBlock(TObject *obj, int index)
+{
+	//TObject *BBlock = NULL;
+	//BBlock = obj;
+	pd->sprite->removeSprite((*obj).sprite);
+	blocks[index]=blocks[blockCount-1];
+	blockCount --;
+	if(blockCount<0){blockCount=0;}
 }
 
 void moveRocket(TObject *obj)
@@ -139,23 +163,44 @@ void moveRocket(TObject *obj)
 	(*obj).postion[0] += obj->speed[0];
 	moveObject(obj);
 }
+void checkNormal(TObject *obj1, TObject *obj2)
+{
+
+}
+
+void horizontalBounds(TObject *obj)
+{
+	(*obj).speed[0] *= -1;
+}
+
+void verticalBounds(TObject *obj)
+{
+	(*obj).speed[1] *= -1;
+}
 
 void worldCollision(TObject *obj)
 {
 	if ((obj->postion[0] <= 0+(obj->size[0]/2)) || (obj->postion[0] >= 400- (obj->size[0] / 2)))
 	{
-		(*obj).speed[0] *= -1;
+		horizontalBounds(obj);
 	}
 	if ((obj->postion[1] <= 0+ (obj->size[1] / 2)))// || (obj->postion[1] >= 240- (obj->size[1] / 2)))
 	{
-		(*obj).speed[1] *= -1;
+		verticalBounds(obj);
 	}
 }
 
-bool objectCollision(TObject obj1, TObject obj2)
+
+bool objectVerticalCollision(TObject obj1, TObject obj2)
 {
-return (obj1.postion[0]+(obj1.size[0]/2))>(obj2.postion[0]-(obj2.size[0]/2))&&(obj1.postion[1] + (obj1.size[1] / 2)) > (obj2.postion[1] - (obj2.size[1] / 2))&&
-		(obj2.postion[0] + (obj2.size[0] / 2)) > (obj1.postion[0] - (obj1.size[0] / 2))&&	(obj2.postion[1] + (obj2.size[1] / 2)) > (obj1.postion[1] - (obj1.size[1] / 2));
+return
+(obj1.postion[1] + (obj1.size[1] / 2)) > (obj2.postion[1] - (obj2.size[1] / 2))&& (obj2.postion[1] + (obj2.size[1] / 2)) > (obj1.postion[1] - (obj1.size[1] / 2));
+		
+}
+
+bool objectHorizontalCollisiion(TObject obj1, TObject obj2)
+{
+	return (obj2.postion[0] + (obj2.size[0] / 2)) > (obj1.postion[0] - (obj1.size[0] / 2)) && (obj1.postion[0] + (obj1.size[0] / 2)) > (obj2.postion[0] - (obj2.size[0] / 2));
 }
 
 int update(void *ud)

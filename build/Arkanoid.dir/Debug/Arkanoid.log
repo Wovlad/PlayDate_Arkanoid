@@ -4,6 +4,7 @@
   cl /c /ID:\PlaydateSDK\C_API /Zi /W3 /WX- /diagnostics:classic /Od /Ob0 /D _WINDLL /D _MBCS /D WIN32 /D _WINDOWS /D TARGET_SIMULATOR=1 /D _WINDLL=1 /D TARGET_EXTENSION=1 /D "CMAKE_INTDIR=\"Debug\"" /D Arkanoid_EXPORTS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Arkanoid.dir\Debug\\" /Fd"Arkanoid.dir\Debug\vc141.pdb" /Gd /TC /errorReport:prompt D:\Projects\PlayDateProjects\Arkanoid\game.c
   
   game.c
-D:\Projects\PlayDateProjects\Arkanoid\game.c(91): warning C4244: 'function': conversion from 'int' to 'float', possible loss of data
-d:\projects\playdateprojects\arkanoid\game.c(166): warning C4716: 'update': must return a value
+D:\Projects\PlayDateProjects\Arkanoid\game.c(96): warning C4244: 'function': conversion from 'int' to 'float', possible loss of data
+d:\projects\playdateprojects\arkanoid\game.c(211): warning C4716: 'update': must return a value
+     Creating library D:/Projects/PlayDateProjects/Arkanoid/build/Debug/Arkanoid.lib and object D:/Projects/PlayDateProjects/Arkanoid/build/Debug/Arkanoid.exp
   Arkanoid.vcxproj -> D:\Projects\PlayDateProjects\Arkanoid\build\Debug\Arkanoid.dll
