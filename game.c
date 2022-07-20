@@ -30,6 +30,10 @@ void setPDPtr(PlaydateAPI *ppd)
 {
 pd= ppd;
 }
+void drawWindow()
+{
+	pd->graphics->drawLine(350, 0, 350, 400, 1, kColorBlack);
+}
 
 LCDBitmap *loadImageAtPath(const char *path)
 {
@@ -56,8 +60,8 @@ void initObject(TObject *obj, char *patch, int xPos, int yPos)
 	(*obj).size[1]=scaleY;
 	(*obj).postion[0]=xPos;
 	(*obj).postion[1]=yPos;
-	(*obj).speed[0]=5;
-	(*obj).speed[1]=5;
+	(*obj).speed[0]=1;
+	(*obj).speed[1]=1;
 	
 	pd->sprite->addSprite(obj->sprite);	
 
@@ -85,9 +89,10 @@ void createBlocks()
 
 void setupGame(void)
 {
- initObject(&ball, ballPatch,200,220);
+ initObject(&ball, ballPatch,200,100);
  initObject(&rocket, rocketPatch,200,230); 
  createBlocks();
+ 
 }
 
 
@@ -103,7 +108,9 @@ worldCollision(ball);
 (*ball).postion[1] += ball->speed[1];
 if (objectVerticalCollision(*ball, *rocket)&& (objectHorizontalCollisiion(*ball, *rocket)))
 {
-	(*ball).speed[1] = -1;
+	//(*ball).speed[1] = -1;
+	(*ball).postion[1]=rocket->postion[1]-(rocket->size[1]);
+	verticalBounds(ball);
 }
 
 for (int i = 0; i < blockCount;i++)
@@ -111,16 +118,16 @@ for (int i = 0; i < blockCount;i++)
 	if (objectVerticalCollision(*ball, blocks[i])&& objectHorizontalCollisiion(*ball, blocks[i]))
 	{
 
-		if (ball->postion[1]+ball->size[1]>(blocks[i].postion[1]+blocks[i].size[1]))
+		if (ball->postion[1]>(blocks[i].postion[1]+(blocks[i].size[1]/2)))
 		{
 			verticalBounds(ball);
+			//horizontalBounds(ball);
 		}
 		else
 		{
 			horizontalBounds(ball);
+			//verticalBounds(ball);
 		}
-		//verticalBounds(ball);
-		//horizontalBounds(ball);
 		destroyBlock(&blocks[i], i);
 		break;
 	}
@@ -203,9 +210,11 @@ bool objectHorizontalCollisiion(TObject obj1, TObject obj2)
 	return (obj2.postion[0] + (obj2.size[0] / 2)) > (obj1.postion[0] - (obj1.size[0] / 2)) && (obj1.postion[0] + (obj1.size[0] / 2)) > (obj2.postion[0] - (obj2.size[0] / 2));
 }
 
+
 int update(void *ud)
 {	
 	flyBall(&ball, &rocket);
 	moveRocket(&rocket);
 	pd->sprite->updateAndDrawSprites();
+	
 }
