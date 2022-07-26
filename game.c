@@ -14,12 +14,22 @@ typedef struct CObject
 	int speed[2];
 	bool isStatic;
 } TObject;
+
+typedef struct CHudIco
+{
+	LCDBitmap *sprite;
+	int position[2];
+}THudIco;
  
  TObject rocket;
  TObject ballSprite;
+ TObject bonus;
  TObject blocks[99];
  int blockCount = 0;
  
+
+ THudIco liveIco[3];
+
  bool objectHorizontalCollisiion(TObject obj1, TObject obj2);
  bool objectVerticalCollision(TObject obj1, TObject obj2);
  void horizontalBounds(TObject *obj);
@@ -120,12 +130,29 @@ void resetBallStatus()
 	initBall();
 }
 
+
+void initHud(THudIco* hud[])
+{
+	for (int i = 0; i < 3; i++)
+	{
+		LCDBitmap* ball = NULL;
+		(*hud)[i].sprite = pd->sprite->newSprite();
+		ball = loadImageAtPath(ballPatch);
+		pd->sprite->setImage((*hud[i]).sprite, ball, kBitmapUnflipped);
+		pd->sprite->addSprite(hud[i]->sprite);
+		hud[i]->position[0] = 375;
+		hud[i]->position[1] = 50 + i * 25;
+	}
+}
+
 void setupGame(void)
 {
  initObject(&ballSprite, ballPatch,200,100);
  initObject(&rocket, rocketPatch,200,230); 
+ //initObject(&bonus, ballPatch,0,0);
  createBlocks(); 
  initBall();
+ initHud(&liveIco);
 }
 
 
@@ -172,14 +199,32 @@ if (ball->isStatic)
 moveObject(ball);
 }
 
+void spawnBonus(int xPos, int yPos)
+{
+	if(rand() % 100 < 10)
+	{
+		initObject(&bonus, ballPatch,xPos, yPos);
+		bonus.speed[1]=2;
+		moveObject(&bonus);
+		bonus.speed[1]=3;
+	}
+}
+
+void dropBonus()
+{
+
+
+}
 void destroyBlock(TObject *obj, int index)
 {
 	//TObject *BBlock = NULL;
+	spawnBonus(obj->postion[0], obj->postion[1]);
 	//BBlock = obj;
 	pd->sprite->removeSprite((*obj).sprite);
 	blocks[index]=blocks[blockCount-1];
 	blockCount --;
 	if(blockCount<0){blockCount=0;}
+	
 }
 
 void controll(TObject *obj)
@@ -253,10 +298,17 @@ bool objectHorizontalCollisiion(TObject obj1, TObject obj2)
 	return (obj2.postion[0] + (obj2.size[0] / 2)) > (obj1.postion[0] - (obj1.size[0] / 2)) && (obj1.postion[0] + (obj1.size[0] / 2)) > (obj2.postion[0] - (obj2.size[0] / 2));
 }
 
+
+void drawHud()
+{
+
+}
 int update(void *ud)
 {	
 	flyBall(&ballSprite, &rocket);
 	controll(&rocket);
 	pd->sprite->updateAndDrawSprites();
 	drawWindow();
+	drawHud();
+	dropBonus();
 }
