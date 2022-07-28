@@ -133,16 +133,7 @@ void resetBallStatus()
 
 void initHud(THudIco* hud[])
 {
-	for (int i = 0; i < 3; i++)
-	{
-		LCDBitmap* ball = NULL;
-		(*hud)[i].sprite = pd->sprite->newSprite();
-		ball = loadImageAtPath(ballPatch);
-		pd->sprite->setImage((*hud[i]).sprite, ball, kBitmapUnflipped);
-		pd->sprite->addSprite(hud[i]->sprite);
-		hud[i]->position[0] = 375;
-		hud[i]->position[1] = 50 + i * 25;
-	}
+
 }
 
 void setupGame(void)
